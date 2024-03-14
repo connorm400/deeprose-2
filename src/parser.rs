@@ -1,5 +1,5 @@
 use crate::lexer::{Token, Lexer};
-use crate::ast::LispObject;
+use crate::object::LispObject;
 use std::fmt::{Display, Formatter};
 use std::error::Error;
 
@@ -66,6 +66,7 @@ impl Parser {
             Token::Str(s) => LispObject::Str(s),
             Token::Ident(s) => LispObject::Symbol(s),
             Token::Int(i) => LispObject::Int(i),
+            Token::Float(f) => LispObject::Float(f),
             Token::Bool(b) => LispObject::Bool(b),
             t => {
                 return Err(ParserError::UnexpectedToken(t))

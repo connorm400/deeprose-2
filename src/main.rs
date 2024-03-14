@@ -1,6 +1,8 @@
-mod ast;
+mod object;
 mod lexer;
 mod parser;
+mod function;
+mod env;
 
 use parser::Parser;
 use lexer::Lexer;

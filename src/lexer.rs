@@ -1,10 +1,12 @@
 use std::iter::Iterator;
+use crate::parser::Parser;
 
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Ident(String),
     Int(i32),
+    Float(f64),
     Quote,
     LParen,
     RParen,
@@ -39,7 +41,6 @@ pub struct Lexer {
     read_position: usize,
     line_number:usize,
     ch: char,
-    //errors: Vec<String>,
 }
 
 impl Lexer {
@@ -50,7 +51,6 @@ impl Lexer {
             read_position: 0,
             line_number: 0,
             ch: ' ',
-            //errors: Vec::new(),
         }
     }
 
@@ -72,7 +72,7 @@ impl Lexer {
             },
             '"' => return self.read_string(),
             _ if Token::is_identifier_letter(self.ch) => return self.read_identifier(),
-            _ if self.ch.is_digit(10) => return self.read_integer(),
+            _ if self.ch.is_digit(10) => return self.read_number(),
             _ => Token::Illegal
         };
 
@@ -104,17 +104,27 @@ impl Lexer {
         }
     }
 
-    fn read_integer(&mut self) -> Token {
+    fn read_number(&mut self) -> Token {
         let position = self.position;
 
-        while self.ch.is_digit(10) {
+        let mut periods: i8 = 0;
+
+        while self.ch.is_digit(10) || self.ch == '.' && periods < 1 {
+            if self.ch == '.' {
+                periods += 1;
+            }
+
             self.read_char()
         }
 
-        Token::Int(self.input[position..(self.position)]
-            .iter().collect::<String>()
-            .parse()
-            .expect("error with parsing number - this really shouldn't happen I would think"))
+        let num: String = self.input[position..(self.position)]
+            .iter().collect();
+
+        if periods == 1 {
+            Token::Float(num.parse().expect("error parsing float"))
+        } else {
+            Token::Int(num.parse().expect("error parsing int"))
+        }
     }
 
     fn read_identifier(&mut self) -> Token {
