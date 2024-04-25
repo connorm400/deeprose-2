@@ -96,13 +96,24 @@ impl Lexer {
     }
 
     fn skip_whitespace(&mut self) {
-        while self.ch == ' ' || self.ch == '\t' || self.ch == '\n' || self.ch == '\r' {
+        while self.ch == ' ' || self.ch == '\t' || self.ch == '\n' || self.ch == '\r' || self.ch == ';' {
             if self.ch == '\n' {
                 self.line_number += 1;
+            }
+            if self.ch == ';' {
+                self.skip_comment();
             }
             self.read_char();
         }
     }
+
+    fn skip_comment(&mut self) {
+        while self.ch != '\n' {
+            self.read_char();
+        }
+        self.line_number += 1;
+    }
+
 
     fn read_number(&mut self) -> Token {
         let position = self.position;

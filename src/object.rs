@@ -1,4 +1,5 @@
 use crate::function::LispFunction;
+use crate::env::Env;
 
 #[derive(Debug, Clone)]
 pub enum LispObject {
@@ -9,5 +10,15 @@ pub enum LispObject {
     Str(String),
     Symbol(String),
     Bool(bool),
+    Err(LispError),
 }
 
+#[derive(Debug, Clone)]
+pub enum LispError {
+    DivideByZero,
+    BadOperator,
+    BadNumber,
+    NotImplemented,
+    BadForm,
+    SymbolNotResolved,
+}
